@@ -19,6 +19,9 @@ public class TicketService {
             Enumeration<?> names = prop.propertyNames();
             while (names.hasMoreElements()){
                 String name = (String) names.nextElement();
+                if (name.contains("[")){
+                    continue;
+                }
                 config.put(name, prop.getProperty(name));
             }
         } catch (IOException e) {
@@ -33,6 +36,7 @@ public class TicketService {
 
     private void service(){
         ticketCore.login();
+        ticketCore.queryTrain();
     }
 
 

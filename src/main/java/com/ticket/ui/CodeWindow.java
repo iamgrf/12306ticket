@@ -12,7 +12,7 @@ public class CodeWindow extends JFrame {
         this.setSize(300, 230);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle(title);
         JLabel jLabel = new JLabel();
         jLabel.setIcon(new ImageIcon(img));
