@@ -26,11 +26,7 @@ public class TicketCore {
 
     public void login() {
         try {
-            String result = Http.get(Route.HOST + "/otn/login/init");
-            Document doc = Jsoup.parseBodyFragment(result);
-            Elements xx = doc.select("[xml:space]");
-            Http.get(Route.HOST + xx.get(0).attr("src"));
-            Http.post(Route.HOST + "/passport/web/auth/uamtk", "appid=otn");
+            String result = null;
             while (true){
                 byte[] img = Http.getForFile(Route.HOST + "/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&" + new Random().nextDouble());
                 CodeWindow codeWindow = new CodeWindow("登录验证码", img);
@@ -39,7 +35,6 @@ public class TicketCore {
                 String code = buf.readLine();
                 codeWindow.dispose();
                 String login_code = Util.fetchCode(code);
-                System.out.println(login_code);
                 config.put("login_code", login_code);
 
                 result = Http.post(Route.HOST + "/passport/captcha/captcha-check",
@@ -50,9 +45,20 @@ public class TicketCore {
                     break;
                 }
             }
+            int index = 30;
+            while (index > 0){
+                result = Http.post(Route.HOST + "/passport/web/login", String.format("username=%s&password=%s&appid=otn", config.get("username"), config.get("password")));
+                System.out.println("login="+result);
+                if (result != null && result.length() > 0){
+                    break;
+                }
+                index--;
+            }
+            if (result == null || result.length() == 0){
+                Print.log("登录失败,退出程序.");
+                System.exit(0);
+            }
 
-            result = Http.post(Route.HOST + "/passport/web/login", String.format("username=%s&password=%s&appid=otn", config.get("username"), config.get("password")));
-            System.out.println(result);
             JSONObject msgJson = JSON.parseObject(result);
             if (0 != msgJson.getInteger("result_code")){
                 Print.log(msgJson.getString("result_message"));
@@ -90,6 +96,16 @@ public class TicketCore {
         result = Http.get(Route.HOST + String.format("/otn/leftTicket/queryZ?leftTicketDTO.train_date=%s&" +
                         "leftTicketDTO.from_station=%s&leftTicketDTO.to_station=%s&purpose_codes=ADULT", config.get("train_date"),
                 config.get("from_station"), config.get("to_station")));
-        System.out.println(result);
+        msgJson = JSON.parseObject(result);
+    }
+
+    public void submit() {
+        String result = Http.post(Route.HOST + "/otn/login/checkUser", "_json_att=");
+        String parameter = "secretStr=%s&train_date=%s&back_train_date=%s&tour_flag=dc&purpose_codes=ADULT&query_from_station_name=%s&query_to_station_name=%s&undefined=";
+        //{"validateMessagesShowId":"_validatorMessage","status":true,"httpstatus":200,"data":"N","messages":[],"validateMessages":{}}
+        result = Http.post(Route.HOST + "/otn/leftTicket/submitOrderRequest", String.format(parameter, config.get("secretStr"),
+                config.get("train_date"), "2018-01-10", config.get("SNH"), config.get("JIQ")));
+        Print.log(result);
+        result = Http.post(Route.HOST + "/otn/confirmPassenger/initDc", "_json_att=");
     }
 }

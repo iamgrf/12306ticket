@@ -1,6 +1,7 @@
 package com.ticket.util;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -16,6 +17,10 @@ import java.util.List;
  * Created by xy on 2017/10/20.
  */
 public class Http {
+
+    private static RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectTimeout(50000).setConnectionRequestTimeout(10000)
+            .setSocketTimeout(50000).build();
 
     private static String inputStreamTOString(InputStream in) throws Exception{
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -41,8 +46,9 @@ public class Http {
         CloseableHttpResponse response = null;
         try {
             Print.log("GET请求:" + url);
-            HttpGet httpget = new HttpGet(url);
-            response = HttpClient.fetchClient().execute(httpget);
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.setConfig(requestConfig);
+            response = HttpClient.fetchClient().execute(httpGet);
             InputStream x = response.getEntity().getContent();
             return inputStreamTOString(x);
         }catch (Exception e){
@@ -60,8 +66,9 @@ public class Http {
         CloseableHttpResponse response = null;
         try {
             Print.log("GET请求:" + url);
-            HttpGet httpget = new HttpGet(url);
-            response = HttpClient.fetchClient().execute(httpget);
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.setConfig(requestConfig);
+            response = HttpClient.fetchClient().execute(httpGet);
             return inputStreamTOByteArray(response.getEntity().getContent());
         }catch (Exception e){
             e.printStackTrace();
@@ -79,6 +86,7 @@ public class Http {
     public static String post(String url, String parameter) {
         CloseableHttpResponse response = null;
         try {
+            Print.log("POST请求:" + url + "?" + parameter);
             List<NameValuePair> formParams = new ArrayList<NameValuePair>();
             if (parameter != null && parameter.length() > 0){
                 String[] parameters = parameter.split("&");
@@ -90,6 +98,7 @@ public class Http {
                 }
             }
             HttpPost httpPost = new HttpPost(url);
+            httpPost.setConfig(requestConfig);
             UrlEncodedFormEntity uefEntity = new UrlEncodedFormEntity(formParams, "UTF-8");
             httpPost.setEntity(uefEntity);
             response = HttpClient.fetchClient().execute(httpPost);

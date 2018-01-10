@@ -37,6 +37,7 @@ public class TicketService {
     private void service(){
         ticketCore.login();
         ticketCore.queryTrain();
+        ticketCore.submit();
     }
 
 
