@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public final class Print {
 
     public static void log(Object msg){
-        System.out.println("[" + LocalDateTime.now() + "]" + msg);
+        System.out.println("[" + LocalDateTime.now().toString().replace("T", " ") + "]" + msg);
     }
 
 }
