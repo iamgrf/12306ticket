@@ -65,11 +65,11 @@ public abstract class TicketCore {
                     break;
                 case "query_to_station_name":
                     ticketConfig.setQueryToStationName(prop.getProperty(key));
-                    if (StationNameUtil.get(ticketConfig.getQueryFromStationName()) == null){
+                    if (StationNameUtil.get(ticketConfig.getQueryToStationName()) == null){
                         Print.log("未找到出发车站");
                         System.exit(0);
                     }
-                    ticketConfig.setToStation(StationNameUtil.get(ticketConfig.getQueryFromStationName()).getCode());
+                    ticketConfig.setToStation(StationNameUtil.get(ticketConfig.getQueryToStationName()).getCode());
                     break;
                 case "passenger_ticket_str":
                     ticketConfig.setPassengerTicketStr(prop.getProperty(key));

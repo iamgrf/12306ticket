@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.ticket.ui.LoginCodeView;
+import com.ticket.util.Print;
 
 public class TicketService extends TicketCore{
 
@@ -46,7 +47,6 @@ public class TicketService extends TicketCore{
     private void checkTicket() {
         while (true){
             result = queryTrain();
-
             JSONObject msgJson = JSON.parseObject(result);
             JSONArray resultTrain = msgJson.getJSONObject("data").getJSONArray("result");
 
@@ -69,11 +69,11 @@ public class TicketService extends TicketCore{
             }
 
             try {
+                Print.log("等待下次查票");
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
